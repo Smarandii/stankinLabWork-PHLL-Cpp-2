@@ -87,30 +87,6 @@ bool there_forbidden_operators(string str) {
 	return !(and_counter % 2 == 0 && equal_counter % 2 == 0 && or_counter % 2 == 0);
 
 }
-bool there_pair_operators_and_even_num_of_operands(string str) {
-	int char_num;
-	int operand_counter = 0;
-	bool there_pair_operators = false;
-	for (int i = 0; i < str.length(); i++) {
-		char_num = str[i];
-		if (char(char_num) == '&' || char(char_num) == '=' || char(char_num) == '|') there_pair_operators = true;
-		if (char(char_num) == '1') operand_counter++;
-	}
-
-	if (operand_counter == 0) return false;
-	if (there_pair_operators) return operand_counter % 2 == 0;
-	return false; 
-}
-bool there_unpair_operators_and_even_num_of_operators(string str) {
-	int char_num;
-	bool there_unpair_operators = false;
-	//for (int i = 0; i < str.length(); i++)
-	//{
-	//	char_num = str[i];
-	//	if (char(char_num) == '!') {}
-	//}
-	return there_unpair_operators;
-}
 
 string simplify(string str) {
 	bool nothing_added = true;
@@ -172,16 +148,18 @@ bool check_brackets(string str) {
 }
 bool check_operators(string str) {
 	string f_str;
+	int operands = 0, operations = 0;
 	if (there_forbidden_operators(str)) return false;
-	
+	// TODO: check unary operators
 
+	// TODO: simplify str to operands and binary operations
 	f_str = simplify(str);
 	cout << f_str << endl;
 	if (f_str[0] == '0') return false;
-	if (!there_pair_operators_and_even_num_of_operands(f_str)) return false;
-	//if (!there_unpair_operators_and_even_num_of_operators(f_str)) return false;
 
-	return true;
+	// TODO: calculate quantity of operands and operations. If str is correct then operands - 1 == operations 
+
+	return operands - 1 == operations;
 
 }
 
