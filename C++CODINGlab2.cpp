@@ -55,6 +55,7 @@ bool is_operator(int symb) {
 bool is_forbidden_operator(int symb) {
 	return symb == 94 || symb == 93 || symb == 91 || symb == 126 || symb == 62 || symb == 60 || symb == 46 || symb == 61;
 }
+
 bool identifiers_cant_stay_together(int char_1, int char_2) {
 
 	if (is_number(char_1) && is_letter(char_2)) return true;
@@ -87,6 +88,14 @@ bool there_forbidden_operators(string str) {
 	return !(and_counter % 2 == 0 && equal_counter % 2 == 0 && or_counter % 2 == 0);
 
 }
+bool there_wrong_used_unary_operators(string str) {
+	int i;
+	for (i = 0; i < str.length() - 1; i++) {
+		if (str[i] == '!' && (is_space(str[i+1]))) return true;
+	}
+	return false;
+
+}
 
 string simplify(string str) {
 	bool nothing_added = true;
@@ -95,12 +104,16 @@ string simplify(string str) {
 	for (int i = 0; i < str.length(); i++) {
 		char_num = str[i];
 		str_symb = str[i];
-		if (!is_space(char_num) && !is_bracket(char_num)) {
+		if (!is_space(char_num) && !is_bracket(char_num) && str[i] != '!') {
+			cout << str[i] << " " << i << " " << nothing_added << endl;
 			if ((is_letter(char_num) || is_number(char_num)) && nothing_added) { f_str.append(operand); nothing_added = false; }
 			if (is_operator(char_num))
 			{
+				
 				if (i!=0 && nothing_added && (str[i-1] != '&' || str[i - 1] != '|')) return {"0"};
-				f_str.append(str_symb);
+				if (i != str.length() - 1 && !nothing_added && str[i + 1] == '+' && str[i] == '+') i = i + 1;
+				if (i != str.length() - 1 && !nothing_added && str[i + 1] == '-' && str[i] == '-') i = i + 1;
+				else { f_str.append(str_symb); }
 				nothing_added = true;
 			}
 		}
@@ -149,8 +162,11 @@ bool check_brackets(string str) {
 bool check_operators(string str) {
 	string f_str;
 	int operands = 0, operations = 0;
+	cout << "forbidden operators" << endl;
 	if (there_forbidden_operators(str)) return false;
 	// TODO: check unary operators
+	cout << "unary operators" << endl;
+	if (there_wrong_used_unary_operators(str)) return false;
 
 	// TODO: simplify str to operands and binary operations
 	f_str = simplify(str);
@@ -172,9 +188,9 @@ bool check_statement(string str) {
 
 bool test()
 {
+
 	int p1 = 0, p = 19;
-	while ((+ + p1 + + + + + 1 + 1 == !20) && (- - p - - - 1 == 18)) p--;
-	cout << "EXPRESSION IS CORRECT";
+	while ((p1++ + 1 + 1) && (p - 1)) p--;
 	return true;
 }
 
