@@ -50,10 +50,10 @@ bool is_underscore(int symb) {
 	return symb == 95;
 }
 bool is_operator(int symb) {
-	return symb == 33 || symb == 38 || symb == 42 || symb == 43 || symb == 45 || symb == 47 || symb == 61;
+	return symb == 33 || symb == 38 || symb == 42 || symb == 43 || symb == 45 || symb == 47;
 }
 bool is_forbidden_operator(int symb) {
-	return symb == 94 || symb == 93 || symb == 91 || symb == 126 || symb == 62 || symb == 60 || symb == 46;
+	return symb == 94 || symb == 93 || symb == 91 || symb == 126 || symb == 62 || symb == 60 || symb == 46 || symb == 61;
 }
 bool identifiers_cant_stay_together(int char_1, int char_2) {
 
@@ -123,7 +123,7 @@ string simplify(string str) {
 			if ((is_letter(char_num) || is_number(char_num)) && nothing_added) { f_str.append(operand); nothing_added = false; }
 			if (is_operator(char_num))
 			{
-				if (i!=0 && nothing_added && (str[i-1] != '&' || str[i - 1] != '=' || str[i - 1] != '|')) return {"0"};
+				if (i!=0 && nothing_added && (str[i-1] != '&' || str[i - 1] != '|')) return {"0"};
 				f_str.append(str_symb);
 				nothing_added = true;
 			}
@@ -173,6 +173,7 @@ bool check_brackets(string str) {
 bool check_operators(string str) {
 	string f_str;
 	if (there_forbidden_operators(str)) return false;
+	
 
 	f_str = simplify(str);
 	cout << f_str << endl;
@@ -191,6 +192,14 @@ bool check_statement(string str) {
 		&& check_operators(str);
 }
 
+bool test()
+{
+	int p1 = 0, p = 19;
+	while ((+ + p1 + + + + + 1 + 1 == !20) && (- - p - - - 1 == 18)) p--;
+	cout << "EXPRESSION IS CORRECT";
+	return true;
+}
+
 int main()
 {
 	bool statement_correct = true;
@@ -201,14 +210,14 @@ int main()
 	std::cout << "identifiers: " << check_identifires(an_array) << endl;
 	std::cout << "symbols: " << check_symbols(an_array) << endl;
 	std::cout << "brackets: " << check_brackets(an_array) << endl;
-	std::cout << "operands: " << check_operators(an_array) << endl;
+	std::cout << "operators: " << check_operators(an_array) << endl;
 	
 	if (statement_correct) {
-		std::cout << "\nStatement correct\n";
+		std::cout << "\nStatement correct\n"; 
 	}
 	else {
 		std::cout << "\nStatement incorrect\n";
 	}
-	
+	test();
 }
 
