@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+
 // Написать программу, определяющую корректность условия цикла while, содержащего 
 // только арифметические и логические операции.
 using namespace std;
@@ -97,32 +98,100 @@ bool there_wrong_used_unary_operators(string str) {
 
 }
 
-string simplify(string str) {
-	bool nothing_added = true;
-	int char_num;
-	string str_symb, f_str, operand = {"1"};
-	for (int i = 0; i < str.length(); i++) {
-		char_num = str[i];
-		str_symb = str[i];
-		if (!is_space(char_num) && !is_bracket(char_num) && str[i] != '!') {
-			cout << str[i] << " " << i << " " << nothing_added << endl;
-			if ((is_letter(char_num) || is_number(char_num)) && nothing_added) { f_str.append(operand); nothing_added = false; }
-			if (is_operator(char_num))
-			{
-				
-				if (i!=0 && nothing_added && (str[i-1] != '&' || str[i - 1] != '|')) return {"0"};
-				if (i != str.length() - 1 && !nothing_added && str[i + 1] == '+' && str[i] == '+') i = i + 1;
-				if (i != str.length() - 1 && !nothing_added && str[i + 1] == '-' && str[i] == '-') i = i + 1;
-				else { f_str.append(str_symb); }
-				nothing_added = true;
-			}
-		}
-
+string replace(string char1, string char2, string str) {
+	int pos;
+	for (pos = 0; pos < str.length(); pos++)
+	{
+		if (char1.length() == 2 && str[pos] == char1[0] && str[pos + 1] == char1[1]) str.replace(pos, 2, char2);
+		
+		if (char1.length() == 1 && str[pos] == char1[0]) str.replace(pos, 1, char2);
+		
 	}
-	cout << f_str << endl;
-	return f_str;
+	return str;
 }
 
+int count(char char1, string str) {
+	int symbol;
+	int symbol1 = char1;
+	int c = 0;
+	for (int i = 0; i < str.length(); i++) {
+		symbol = str[i];
+		if (symbol == symbol1)
+			c++;
+	}
+	return c;
+}
+
+bool simplify(string str) 
+{
+	bool flag = true;
+	int operands = 0;
+	int operators = 0;
+
+	str = replace("++", "", str);
+	str = replace("--", "", str);
+	str = replace("!", "", str);
+	str = replace("(", "", str);
+	str = replace(")", "", str);
+	str = replace("&&", "+", str);
+	str = replace("-", "+", str);
+	str = replace("//", "+", str);
+	str = replace("*", "+", str);
+	str = replace("||", "+", str);
+	str = replace("%", "+", str);
+	operators = count('+', str);
+	str = replace("+", " ", str);
+
+	for (int i = 0; i < str.length(); i++)
+	{
+		if (str[i] != ' ' && flag)
+		{
+			operands += 1;
+			flag = false;
+		}
+		if (!flag && str[i] == ' ') flag = true;
+	}
+	cout << "operands_quantity: " << operands << endl;
+	cout << "operators_quantity: " << operators << endl;
+	return operands - 1 == operators;
+}
+
+int count_operators(string str) {
+	int counter = 0;
+	int char_num;
+	for (int i = 0; i < str.length(); i++)
+	{
+		char_num = str[i];
+		if (is_operator(str[i])) counter++;
+	}
+	return counter;
+}
+int count_operands(string str) {
+	int counter = 0;
+	bool flag = false;
+	for (int i = 0; i < str.length(); i++)
+	{
+		if (str[i] != '+' && str[i] != ' ' && !flag)
+		{
+			counter++;
+			flag = true;
+		}
+		if (str[i] == '+' || str[i] == ' ')
+		{
+			flag = false;
+		}
+
+
+	}
+	return counter;
+}
+bool operands_quantity_correct(string chunk_of_code) {
+	int operands_quantity = count_operands(chunk_of_code);
+	int operators_quantity = count_operators(chunk_of_code);
+	// cout << operands_quantity << endl; количество плюсов
+	// cout << operators_quantity << endl; количество операндов
+	return operands_quantity == operators_quantity + 1;
+}
 
 bool check_symbols(string str) {
 	int char_num;
@@ -160,22 +229,25 @@ bool check_brackets(string str) {
 	return open_brackets_counter == close_brackets_counter;
 }
 bool check_operators(string str) {
-	string f_str;
+	bool f_str;
 	int operands = 0, operations = 0;
-	cout << "forbidden operators" << endl;
-	if (there_forbidden_operators(str)) return false;
+	bool fb_operators = there_forbidden_operators(str);
+	bool wrng_unary_operators = there_wrong_used_unary_operators(str);
+	bool wrng_quantity_oprtrs_oprnds = !operands_quantity_correct(str);
+
+	cout << "there is forbidden operators:" << fb_operators << endl;
+	if (fb_operators) return false;
 	// TODO: check unary operators
-	cout << "unary operators" << endl;
-	if (there_wrong_used_unary_operators(str)) return false;
+	cout << "there is wrong unary operators:" << wrng_unary_operators << endl;
+	if (wrng_unary_operators) return false;
 
 	// TODO: simplify str to operands and binary operations
-	f_str = simplify(str);
-	cout << f_str << endl;
-	if (f_str[0] == '0') return false;
+	// TODO: calculate quantity of operands and operations. If str is correct then operands - 1 == operations
+	wrng_quantity_oprtrs_oprnds = simplify(str);
+	cout << "there is wrong quantity of operators or operands:" << wrng_unary_operators << endl;
+	if (!wrng_quantity_oprtrs_oprnds) return false;
 
-	// TODO: calculate quantity of operands and operations. If str is correct then operands - 1 == operations 
-
-	return operands - 1 == operations;
+	return true;
 
 }
 
@@ -200,11 +272,14 @@ int main()
 	string an_array;
 	an_array = input();
 	cout << an_array << "\n";
-	//statement_correct = check_statement(an_array);
-	std::cout << "identifiers: " << check_identifires(an_array) << endl;
-	std::cout << "symbols: " << check_symbols(an_array) << endl;
-	std::cout << "brackets: " << check_brackets(an_array) << endl;
-	std::cout << "operators: " << check_operators(an_array) << endl;
+	statement_correct = check_identifires(an_array);
+	cout << "identifiers: " << statement_correct << endl;
+	statement_correct = check_symbols(an_array);
+	cout << "symbols: " << statement_correct << endl;
+	statement_correct = check_brackets(an_array);
+	cout << "brackets: " << statement_correct << endl;
+	statement_correct = check_operators(an_array);
+	cout << "operators: " << statement_correct << endl;
 	
 	if (statement_correct) {
 		std::cout << "\nStatement correct\n"; 
